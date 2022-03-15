@@ -1,0 +1,145 @@
+@page "/ConsultaEmpaque"
+
+
+
+
+
+<EditForm Model="productospaquete" OnValidSubmit="Buscar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="card">
+
+
+        <div class="card-header">
+            <h3>Consulta</h3>
+        </div>
+
+        <div class="card-body">
+            <form>
+                <div class="input-group d-flex align-items-end">
+                    <div class="flex-fill mx-2">
+                        <label>Filtro</label>
+                        <select class="form-control col-2" @bind="Filtro">
+                            <option value="0"></option>
+                            <option value="1">Id</option>
+                            <option value="2">Concepto</option>
+                            <option value="3">Fecha</option>
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="flex-fill mx-2">
+                        <label>Criterio</label>
+                        <input type="text" class="form-control" @bind="Criterio" />
+                    </div>
+
+                    <button type="button" class="btn btn-warning" @onclick="Buscar">
+                        <i class="oi oi-magnifying-glass mr-2" /> Buscar
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr class="table-info">
+                    <th>Producto Id</th>
+                    <th>Concepto</th>
+                    <th>fecha</th>
+                    <th>Vista <span class="oi oi-eye"></span> </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in lista)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Concepto</td>
+                        <td>@item.FechaCaducacion</td>
+                       
+                        <td><a class="btn btn-sm btn-outline-primary oi oi-eye" href="RegistroEmpaquete/@item.Id">Ver</a></td>
+                        
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+
+</EditForm>
+
+@code {
+
+    public Productospaquete productospaquete {get; set;}= new Productospaquete();
+    public string Filtro { get; set; }
+    public string Criterio { get; set; }
+    public List<Productospaquete> lista {get; set; }=new List<Productospaquete>();
+
+    [Inject]
+    public ProductosBLL productosBLL { get; set; }
+    public void Buscar()
+    {
+        lista = productosBLL.GeListapaquete();
+
+
+        if (Criterio != null)
+
+        {
+
+            switch (Filtro)
+
+            {
+
+                case "0":
+
+                    lista = productosBLL.GeListapaquete();
+
+                    break;
+
+                case "1":
+
+
+                    lista = productosBLL.GetListEmpaquetado(l => l.Id.ToString() == (Criterio));
+
+
+                    break;
+
+
+                case "2":
+
+                    lista = productosBLL.GetListEmpaquetado(l => l.Concepto.ToLower().Contains(Criterio.ToLower()));
+                    break;
+
+                 case "3":
+                    
+                    lista = productosBLL.GetListEmpaquetado(l => l.FechaCaducacion.ToString().ToLower().Contains(Criterio.ToLower()));
+                    break;
+
+
+
+
+
+            }
+
+        }
+
+        else
+
+        {
+
+            lista = productosBLL.GetListEmpaquetado(t => true);
+
+        }
+
+
+
+    }
+
+
+
+}

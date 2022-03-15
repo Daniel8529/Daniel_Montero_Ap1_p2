@@ -1,4 +1,5 @@
 @page "/RegistroEmpaquete"
+@page "/RegistroEmpaquete/{Productoid:int}"
 @inject IToastService toast
 <EditForm Model="productospaquete" OnValidSubmit="Guardar">
     <DataAnnotationsValidator />
@@ -218,7 +219,17 @@
 
      [Inject]
     public ProductosBLL productosBLL { get; set; }
+   
+   protected override void OnInitialized()
 
+    {
+
+       productospaquete.Id=Productoid;
+        lista = productosBLL.GetList(c => true);
+        lista3=productosBLL.GetListEmpaquetado(c => true);
+      
+        Buscar();
+    }
     
    
     public void Buscar()
@@ -255,15 +266,7 @@
         Limpiar();
     }
     
-    protected override void OnInitialized()
-
-    {
-
-   
-        lista = productosBLL.GetList(c => true);
-        lista3=productosBLL.GetListEmpaquetado(c => true);
-       
-    }
+    
     
 
    

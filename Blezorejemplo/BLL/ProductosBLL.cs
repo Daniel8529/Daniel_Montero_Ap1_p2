@@ -19,6 +19,7 @@ namespace Blezorejemplo.BLL
         }
        Productos productos=new Productos();
         Productosdetalle productosdetalle = new Productosdetalle(); 
+       /*  Productospaquete productospaquete = new Productospaquete(); */
         public bool insertar(Productos inseta)
         {
             bool paso = false;
@@ -258,6 +259,14 @@ namespace Blezorejemplo.BLL
         {
 
             return contexto.ProductosDetalle.ToList();
+
+
+
+        }
+        public List<Productospaquete> GeListapaquete()
+        {
+
+            return contexto.productospaquetes.ToList();
 
 
 
