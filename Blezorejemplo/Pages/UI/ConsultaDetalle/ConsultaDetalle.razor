@@ -1,0 +1,181 @@
+@page "/ConsultaDetalle"
+@using Entidades
+
+
+
+
+<EditForm Model="productos" OnValidSubmit="Buscar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+
+       <div class="container">
+        <div class="card-header">
+            <h3>Consulta</h3>
+        </div>
+
+        <div class="card-body">
+            <form>
+                <div class="input-group d-flex align-items-end">
+                    <div class="flex-fill mx-2">
+                        <label>Filtro</label>
+                        <select class="form-control col-2" @bind="Filtro">
+                            <option value="0"></option>
+                            <option value="1">Producto Id</option>
+                            <option value="2">Presentacion</option>
+                      
+
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="flex-fill mx-2">
+                        <label>Criterio</label>
+                        <input type="text" class="form-control" @bind="Criterio" />
+                    </div>
+
+                    <button type="button" class="btn btn-warning" @onclick="Buscar">
+                        <i class="oi oi-magnifying-glass mr-2" /> Buscar
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+
+        <table class="table table-secondary">
+            <thead class="thead-dark">
+                <tr class="table-info">
+                    <th>Producto Id</th>
+                    <th> Id</th>
+                    <th>Descripcion</th>
+                     <th>Presentacion</th> 
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Existencia enpaquetado</th>
+                   
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in lista)
+                {
+                    @foreach (var items in listas)
+                    {
+                        if (item.Id == items.ProductoId)
+                        {
+                            <tr>
+                            <td>@item.Id</td>
+                            <td>@item.ProductoId</td>
+                            <td>@item.Presentacion</td>
+                            <td>@items.Descripcion</td>
+                            <td>@item.cantidad</td>
+                            <td>RD$@item.Precio</td>
+                            <td>@item.Existenciaempaquetado</td>
+                        </tr>
+                            
+                        }
+                    }
+                        
+                }
+                
+            </tbody>
+
+            <th>Conteo:</th>
+
+                @foreach (var items in lista)
+
+                {
+
+                     conteo = items.Id;
+
+                }
+
+                 <td>@conteo</td>
+                
+                  
+                    
+                
+
+        </table>
+      
+    </div>
+
+
+
+</EditForm>
+
+@code {
+    public Productos productos { get; set; } = new Productos();
+    public string Filtro { get; set; }
+    public string Criterio { get; set; }
+    public List<Productos> listas { get; set; } = new List<Productos>();
+    public Productosdetalle productosdetalle { get; set; } = new Productosdetalle();
+     public List<Productosdetalle> lista { get; set; } = new List<Productosdetalle>();
+    
+    public int conteo;
+
+
+    [Inject]
+    public ProductosBLL productosBLL { get; set; }
+    public void Buscar()
+    {
+        lista= productosBLL.GeListad();
+         listas= productosBLL.GeLista();
+
+
+        if (Criterio != null)
+
+        {
+
+            switch (Filtro)
+
+            {
+
+                case "0":
+
+                    lista = productosBLL.GeListad();
+
+                    break;
+
+                case "1":
+
+
+                    lista = productosBLL.GetListd(l => l.Id.ToString() == (Criterio));
+
+
+                    break;
+
+
+                case "2":
+
+                    
+                     lista = productosBLL.GetListd(l => l.Presentacion.ToLower().Contains(Criterio.ToLower()));
+                    break;
+                    
+                   
+                  
+
+
+
+
+            }
+
+        }
+
+        else
+
+        {
+            listas= productosBLL.GeLista();
+            lista = productosBLL.GetListd(t => true);
+
+        }
+
+
+
+    }
+
+
+
+}

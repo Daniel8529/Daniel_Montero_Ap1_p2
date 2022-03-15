@@ -1,0 +1,155 @@
+@page "/Consultar"
+
+
+
+
+
+<EditForm Model="productos" OnValidSubmit="Buscar">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="card">
+
+
+        <div class="card-header">
+            <h3>Consulta</h3>
+        </div>
+
+        <div class="card-body">
+            <form>
+                <div class="input-group d-flex align-items-end">
+                    <div class="flex-fill mx-2">
+                        <label>Filtro</label>
+                        <select class="form-control col-2" @bind="Filtro">
+                            <option value="0"></option>
+                            <option value="1">Id</option>
+                            <option value="2">Descripción</option>
+                            <option value="3">Fecha</option>
+                        </select>
+
+                    </div>
+
+
+
+                    <div class="flex-fill mx-2">
+                        <label>Criterio</label>
+                        <input type="text" class="form-control" @bind="Criterio" />
+                    </div>
+
+                    <button type="button" class="btn btn-warning" @onclick="Buscar">
+                        <i class="oi oi-magnifying-glass mr-2" /> Buscar
+                    </button>
+                </div>
+
+            </form>
+        </div>
+
+
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr class="table-info">
+                    <th>Producto Id</th>
+                    <th>Descripcion</th>
+                    <th>Exitencia</th>
+                    <th>Costo</th>
+                    <th>Valor Inventario</th>
+                    <th>Precio</th>
+                    <th>Ganancia</th>
+                    <th>Fecha</th>
+                    <th>Gramo</th>
+                    <th>Vista <span class="oi oi-eye"></span> </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in lista)
+                {
+                    <tr>
+                        <td>@item.ProductoId</td>
+                        <td>@item.Descripcion</td>
+                        <td>@item.Existencia</td>
+                        <td>@item.Costo</td>
+                        <td>@item.ValorInventario</td>
+                        <td>RD$@item.Precio</td>
+                        <td>%@item.Ganancia</td>
+                        <td>@item.FechaCaducacion</td>
+                        <td>@item.Gramo</td>
+                        <td><a class="btn btn-sm btn-outline-primary oi oi-eye" href="Registro/@item.ProductoId">Ver</a></td>
+                        
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
+
+</EditForm>
+
+@code {
+    public Productos productos { get; set; } = new Productos();
+    public string Filtro { get; set; }
+    public string Criterio { get; set; }
+    public List<Productos> lista { get; set; } = new List<Productos>();
+
+    [Inject]
+    public ProductosBLL productosBLL { get; set; }
+    public void Buscar()
+    {
+        lista = productosBLL.GeLista();
+
+
+        if (Criterio != null)
+
+        {
+
+            switch (Filtro)
+
+            {
+
+                case "0":
+
+                    lista = productosBLL.GeLista();
+
+                    break;
+
+                case "1":
+
+
+                    lista = productosBLL.GetList(l => l.ProductoId.ToString() == (Criterio));
+
+
+                    break;
+
+
+                case "2":
+
+                    lista = productosBLL.GetList(l => l.Descripcion.ToLower().Contains(Criterio.ToLower()));
+                    break;
+
+                 case "3":
+                    
+                    lista = productosBLL.GetList(l => l.FechaCaducacion.ToString().ToLower().Contains(Criterio.ToLower()));
+                    break;
+
+
+
+
+
+            }
+
+        }
+
+        else
+
+        {
+
+            lista = productosBLL.GetList(t => true);
+
+        }
+
+
+
+    }
+
+
+
+}
