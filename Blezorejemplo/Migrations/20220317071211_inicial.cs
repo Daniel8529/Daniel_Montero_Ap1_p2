@@ -37,7 +37,7 @@ namespace Blezorejemplo.Migrations
                         .Annotation("Sqlite:Autoincrement", true),
                     Concepto = table.Column<string>(type: "TEXT", nullable: true),
                     FechaCaducacion = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    Enpaquetado = table.Column<float>(type: "REAL", nullable: false),
+                    total = table.Column<float>(type: "REAL", nullable: false),
                     Cantidad = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -68,6 +68,32 @@ namespace Blezorejemplo.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Productoparaayuda",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    descricion = table.Column<string>(type: "TEXT", nullable: true),
+                    Concepto = table.Column<string>(type: "TEXT", nullable: true),
+                    Cantidad = table.Column<int>(type: "INTEGER", nullable: false),
+                    ProductospaqueteId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Productoparaayuda", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Productoparaayuda_productospaquetes_ProductospaqueteId",
+                        column: x => x.ProductospaqueteId,
+                        principalTable: "productospaquetes",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Productoparaayuda_ProductospaqueteId",
+                table: "Productoparaayuda",
+                column: "ProductospaqueteId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_ProductosDetalle_ProductoId",
                 table: "ProductosDetalle",
@@ -76,6 +102,9 @@ namespace Blezorejemplo.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Productoparaayuda");
+
             migrationBuilder.DropTable(
                 name: "ProductosDetalle");
 

@@ -11,13 +11,38 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Blezorejemplo.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20220314230346_inicial")]
+    [Migration("20220317071211_inicial")]
     partial class inicial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.2");
+
+            modelBuilder.Entity("Blezorejemplo.Entidades.Productoparaayuda", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Cantidad")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Concepto")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int?>("ProductospaqueteId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("descricion")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductospaqueteId");
+
+                    b.ToTable("Productoparaayuda");
+                });
 
             modelBuilder.Entity("Blezorejemplo.Entidades.Productos", b =>
                 {
@@ -95,15 +120,22 @@ namespace Blezorejemplo.Migrations
                     b.Property<string>("Concepto")
                         .HasColumnType("TEXT");
 
-                    b.Property<float>("Enpaquetado")
-                        .HasColumnType("REAL");
-
                     b.Property<DateTime>("FechaCaducacion")
                         .HasColumnType("TEXT");
+
+                    b.Property<float>("total")
+                        .HasColumnType("REAL");
 
                     b.HasKey("Id");
 
                     b.ToTable("productospaquetes");
+                });
+
+            modelBuilder.Entity("Blezorejemplo.Entidades.Productoparaayuda", b =>
+                {
+                    b.HasOne("Blezorejemplo.Entidades.Productospaquete", null)
+                        .WithMany("AyudaPaquete")
+                        .HasForeignKey("ProductospaqueteId");
                 });
 
             modelBuilder.Entity("Blezorejemplo.Entidades.Productosdetalle", b =>
@@ -118,6 +150,11 @@ namespace Blezorejemplo.Migrations
             modelBuilder.Entity("Blezorejemplo.Entidades.Productos", b =>
                 {
                     b.Navigation("DetalleProducto");
+                });
+
+            modelBuilder.Entity("Blezorejemplo.Entidades.Productospaquete", b =>
+                {
+                    b.Navigation("AyudaPaquete");
                 });
 #pragma warning restore 612, 618
         }

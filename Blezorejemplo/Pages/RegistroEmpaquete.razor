@@ -119,33 +119,30 @@
                 </thead>
 
                 <tbody>
-                     @foreach (var item in lista)
-                {
-                    @foreach (var items in lista3)
+                
+                    @foreach (var items in productospaquete.AyudaPaquete)
                     {
-                        if (item.ProductoId == items.Id)
-                        {
+                      
                             <tr>
-                            <td>@item.ProductoId</td>
-                            <td>@item.Descripcion</td>
+                             <td>@items.Id</td>
+                             <td>@items.Concepto</td>
                             <td>@items.Cantidad</td>
-                            <td><span class="btn btn-sm btn-outline-primary oi oi-ban" href="#"
-                                @onclick="@(() => RemoverFila())"> Remover</span> </td>
+                              <td><span class="btn btn-sm btn-outline-primary oi oi-ban" href="#"  @onclick="@(() => RemoverFila(items))"> Remover</span> </td>
                         </tr>
                             
                         
                     }
                         
-                }
+                
                     
-                }
+                
 
                 </tbody>
             </table>
               
                 <div class="flex-fill mx-1">
                   <label>Peso total</label>
-                 <InputNumber readonly class="" @bind-Value="productos.Gramo" />
+                 <InputNumber readonly class="" @bind-Value="productospaquete.total" />
                 </div>
              
            
@@ -160,7 +157,7 @@
 
 
                         <div class="input-group">
-                            <div class="flex-fill mx-2">
+                             <div class="flex-fill mx-2">
                                 <label>Producto</label>
                                 <InputSelect class="form-control col-2" @bind-Value="productos.ProductoId">
                                     
@@ -176,7 +173,7 @@
                             <div class="flex-fill mx-2">
                                 <label>Cantidad</label>
                                 <InputNumber class="form-control" @bind-Value="productospaquete.Cantidad" />
-                            </div>
+                            </div> 
 
                             
                         </div>
@@ -209,15 +206,20 @@
 @code {
     [Parameter]
     public int Productoid { get; set; }
+
     public Productos productos { get; set; } = new Productos();
     public Productosdetalle productosdetalle { get; set; } = new Productosdetalle();
     public Productospaquete productospaquete {get; set;}= new Productospaquete();
     public List<Productos> lista { get; set; } = new List<Productos>();
     public List<Productosdetalle> listas { get; set; } = new List<Productosdetalle>();
     public List<Productospaquete> lista3 {get; set; }=new List<Productospaquete>();
+    public string? Concepto  { get; set; }
+    public int Cantidad{ get; set; }
+    
+
     public string Filtro { get; set; }
 
-     [Inject]
+    [Inject]
     public ProductosBLL productosBLL { get; set; }
    
    protected override void OnInitialized()
@@ -276,20 +278,22 @@
          Productos encontrado = productosBLL.Buscar(productos.ProductoId);
          if (encontrado != null)
         {
-           
+            
             this.productos = encontrado;
             productos.Existencia-=productospaquete.Cantidad;
             productos.Ganancia = (int)((productos.Precio - productos.Costo) * 100) / productos.Costo;
             productos.ValorInventario = productos.Existencia * productos.Costo;
             productosBLL.Modificar(productos);
-            toast.ShowSuccess("Se encontró el producto");
+            productosBLL.Insertar(productospaquete);
+            toast.ShowSuccess("Se Guardo");
 
         }
         else
         {
-           toast.ShowError("No se encontró el producto");
+           toast.ShowError("No se  Guardo");
             //MessageBox.Show("No se pudo encontar el producto", "Falido", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+        
          
          
     }
@@ -299,51 +303,63 @@
         productos = new Productos();
         productospaquete=new Productospaquete();
     }
-    public void RemoverFila()
+    public void RemoverFila(Productoparaayuda items)
     {
-         Productos encontrado = productosBLL.Buscar(productospaquete.Id);
-         if (encontrado != null)
+         this.productospaquete.AyudaPaquete.Remove(items);
+          float resta = 0;
+          foreach (var itm in lista)
         {
-            
-            if (productosBLL.EliminarEmpaquetado(productospaquete.Id))
+            if (items.descricion == itm.Descripcion)
             {
-                    
-                lista3=productosBLL.GetListEmpaquetado(c => true);
-
-
-
+                resta = itm.Gramo * (float)Cantidad;
             }
-            
-            
         }
+         productospaquete.total -= resta;
+          
     }
-    public void Eliminar(){
+    
+    
+     
+    public void Agregardetalle()
+    {
+        Productos encontrado = productosBLL.Buscar(productos.ProductoId);
+         if (encontrado != null)
+        {  
+               Cantidad=productospaquete.Cantidad;
+                   foreach (var item in lista)
+        {
+            if (item.Descripcion== item.Descripcion)
+            {
+              productospaquete.total+= (item.Gramo* Cantidad);
+            }
+        }
+                productospaquete.AyudaPaquete.Add(new Productoparaayuda (productos.Descripcion=encontrado.Descripcion ,Cantidad));
+                   lista = productosBLL.GetList(c => true);
+        }
+        else
+        {
+           toast.ShowError("No se encontró el producto");
+            //MessageBox.Show("No se pudo encontar el producto", "Falido", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+       
+    
 
-        if (productosBLL.EliminarEmpaquetado(productospaquete.Id))
+    }
+
+     public void Eliminar(){
+        
+           if (productosBLL.EliminarEmpaquetado(productospaquete.Id))
             {
                     toast.ShowSuccess("Se elimino el producto");
-                lista3=productosBLL.GetListEmpaquetado(c => true);
+                
 
-                    Nuevo();
+                  
 
             }
             else
             {
                 toast.ShowError("No se elimino el producto");
             }
-    }
-    
-     
-    public void Agregardetalle()
-    {
-       
-    
-      productosBLL.Insertar(productospaquete);
-      lista3=productosBLL.GetListEmpaquetado(c => true);
-        lista = productosBLL.GetList(c => true);
-     
- 
-
     }
 
 }
