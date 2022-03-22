@@ -233,7 +233,7 @@ namespace Blezorejemplo.BLL
 
             return lista;
         }
-        public List<Productosdetalle> GetListd(Expression<Func<Productosdetalle, bool>> criterio)
+     /*    public List<Productosdetalle> GetListd(Expression<Func<Productosdetalle, bool>> criterio)
         {
             List<Productosdetalle> lista = new List<Productosdetalle>();
             try
@@ -246,7 +246,7 @@ namespace Blezorejemplo.BLL
             }
             
             return lista;
-        }
+        } */
         public List<Productos> GeLista()
         {
 
@@ -255,14 +255,14 @@ namespace Blezorejemplo.BLL
 
 
         }
-        public List<Productosdetalle> GeListad()
+       /*  public List<Productosdetalle> GeListad()
         {
 
             return contexto.ProductosDetalle.ToList();
 
 
 
-        }
+        } */
         public List<Productospaquete> GeListapaquete()
         {
 

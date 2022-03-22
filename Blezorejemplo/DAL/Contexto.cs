@@ -8,7 +8,7 @@ namespace Blezorejemplo.DAL
     { 
 
         public DbSet<Productos> Productos {get; set;}
-        public DbSet<Productosdetalle> ProductosDetalle {get; set;}
+        
 
         public DbSet<Productospaquete> productospaquetes{ get; set;}
         
