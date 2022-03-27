@@ -10,14 +10,15 @@ namespace Blezorejemplo.Entidades
       [Key]
         
         public int Id { get; set; }
-      
+        public int Idresta { get; set; }
        public  string? descricion { get; set; }
          public string? Concepto  { get; set; }
         public int Cantidad{ get; set; }
         
        
-     public Productoparaayuda(string? concepto , int cantidad){
+      public Productoparaayuda(string? concepto , int cantidad,int  idresta){
         Concepto=concepto;
+         Idresta= idresta;
         Cantidad=cantidad;
 
      }

@@ -17,19 +17,20 @@ namespace Blezorejemplo.BLL
         {
             contexto = _contexto;
         }
-       Productos productos=new Productos();
-        Productosdetalle productosdetalle = new Productosdetalle(); 
-       /*  Productospaquete productospaquete = new Productospaquete(); */
+        Productos productos = new Productos();
+        Productosdetalle productosdetalle = new Productosdetalle();
+         Productospaquete productospaquete = new Productospaquete();
+        /*  Productospaquete productospaquete = new Productospaquete(); */
         public bool insertar(Productos inseta)
         {
             bool paso = false;
             try
             {
-                if (Existe(inseta.Descripcion)||Existes(inseta.ProductoId))
-                  return Modificar(inseta);
+                if (Existe(inseta.Descripcion) || Existes(inseta.ProductoId))
+                    return Modificar(inseta);
                 else
-                contexto.Productos.Add(inseta);
-                
+                    contexto.Productos.Add(inseta);
+
                 paso = contexto.SaveChanges() > 0;
             }
             catch (Exception)
@@ -44,7 +45,7 @@ namespace Blezorejemplo.BLL
             bool paso = false;
             try
             {
-                
+
                 contexto.productospaquetes.Add(inseta);
                 paso = contexto.SaveChanges() > 0;
             }
@@ -53,8 +54,8 @@ namespace Blezorejemplo.BLL
                 throw;
             }
             return paso;
-        } 
-      
+        }
+
         public Productos? Buscar(int ProductoId)
         {
 
@@ -101,12 +102,17 @@ namespace Blezorejemplo.BLL
 
             return encontrado;
         }
-        public bool Modificar(Productos producto)
+        
+        private bool Modificar(Productos producto)
         {
             bool paso = false;
+         
+
 
             try
             {
+                 
+                
                 contexto.Database.ExecuteSqlRaw($"DELETE FROM Productosdetalle WHERE ProductoId={producto.ProductoId}");
 
                 foreach (var Anterior in producto.DetalleProducto)
@@ -124,9 +130,56 @@ namespace Blezorejemplo.BLL
             }
             return paso;
         }
+        public bool Modificarpararestar(Productos producto, Productospaquete productospaquete)
+        {
+            bool paso = false;
 
-        
-       
+
+
+
+            try
+            {
+                paso = contexto.SaveChanges() > 0;
+
+                foreach (var item in productospaquete.AyudaPaquete)
+                {
+                    Productos encontrado = contexto.Productos.Find(item.Idresta);
+
+                    encontrado.Existencia -= item.Cantidad;
+                    encontrado.Ganancia = (int)((producto.Precio - producto.Costo) * 100) / producto.Costo;
+                    encontrado.ValorInventario = producto.Existencia * producto.Costo;
+
+                    contexto.Entry(encontrado).State = EntityState.Modified;
+                    paso = contexto.SaveChanges() > 0;
+
+                }
+
+
+                contexto.Database.ExecuteSqlRaw($"DELETE FROM Productosdetalle WHERE ProductoId={producto.ProductoId}");
+
+                foreach (var Anterior in producto.DetalleProducto)
+                {
+                    contexto.Entry(Anterior).State = EntityState.Added;
+                }
+
+                contexto.Entry(producto).State = EntityState.Modified;
+
+                paso = contexto.SaveChanges() > 0;
+
+
+
+
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return paso;
+        }
+
+
+
 
 
         public bool Eliminar(int id)
@@ -203,7 +256,22 @@ namespace Blezorejemplo.BLL
             return encontrado;
 
         }
-         public List<Productospaquete> GetListEmpaquetado(Expression<Func<Productospaquete, bool>> criterio)
+         public List<Productoparaayuda> GetListAyuda(Expression<Func<Productoparaayuda, bool>> criterio)
+        {
+
+            List<Productoparaayuda> lista = new List<Productoparaayuda>();
+            try
+            {
+                lista = contexto.Productoparaayuda.Where(criterio).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return lista;
+        }
+        public List<Productospaquete> GetListEmpaquetado(Expression<Func<Productospaquete, bool>> criterio)
         {
 
             List<Productospaquete> lista = new List<Productospaquete>();
@@ -233,20 +301,20 @@ namespace Blezorejemplo.BLL
 
             return lista;
         }
-     /*    public List<Productosdetalle> GetListd(Expression<Func<Productosdetalle, bool>> criterio)
-        {
-            List<Productosdetalle> lista = new List<Productosdetalle>();
-            try
-            {
-                lista = contexto.ProductosDetalle.Where(criterio).ToList();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            
-            return lista;
-        } */
+        /*    public List<Productosdetalle> GetListd(Expression<Func<Productosdetalle, bool>> criterio)
+           {
+               List<Productosdetalle> lista = new List<Productosdetalle>();
+               try
+               {
+                   lista = contexto.ProductosDetalle.Where(criterio).ToList();
+               }
+               catch (Exception)
+               {
+                   throw;
+               }
+
+               return lista;
+           } */
         public List<Productos> GeLista()
         {
 
@@ -255,14 +323,14 @@ namespace Blezorejemplo.BLL
 
 
         }
-       /*  public List<Productosdetalle> GeListad()
-        {
+        /*  public List<Productosdetalle> GeListad()
+         {
 
-            return contexto.ProductosDetalle.ToList();
+             return contexto.ProductosDetalle.ToList();
 
 
 
-        } */
+         } */
         public List<Productospaquete> GeListapaquete()
         {
 
@@ -271,7 +339,7 @@ namespace Blezorejemplo.BLL
 
 
         }
-        
+
 
 
 

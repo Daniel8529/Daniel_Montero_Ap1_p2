@@ -159,12 +159,12 @@
                         <div class="input-group">
                              <div class="flex-fill mx-2">
                                 <label>Producto</label>
-                                <InputSelect class="form-control col-2" @bind-Value="productos.ProductoId">
-                                    
-                                        @foreach (var item in lista)
+                                <InputSelect class="form-control col-2"  @bind-Value="productospaquete.Id  ">
+                                      <option>Mixto</option>
+                                        @foreach (var item in productospaquete.AyudaPaquete)
                                         {
                                             
-                                            <option value="@item.ProductoId">@item.Descripcion</option>
+                                            <option value="@item.Id" >@item.Concepto</option>
                             
                                         }
                                 </InputSelect>
@@ -172,7 +172,7 @@
 
                             <div class="flex-fill mx-2">
                                 <label>Cantidad</label>
-                                <InputNumber class="form-control" @bind-Value="productospaquete.Cantidad" />
+                                <InputNumber class="form-control" @bind-Value="productospaquete.Producido" />
                             </div> 
 
                             
@@ -206,21 +206,25 @@
 @code {
     [Parameter]
     public int Productoid { get; set; }
-
     public Productos productos { get; set; } = new Productos();
     public Productosdetalle productosdetalle { get; set; } = new Productosdetalle();
     public Productospaquete productospaquete {get; set;}= new Productospaquete();
+   public Productoparaayuda productoparaayuda {get; set;}= new Productoparaayuda("",0,0);
+    
     public List<Productos> lista { get; set; } = new List<Productos>();
     public List<Productosdetalle> listas { get; set; } = new List<Productosdetalle>();
     public List<Productospaquete> lista3 {get; set; }=new List<Productospaquete>();
+    
+     public List<Productoparaayuda> lista4 { get; set; } = new List<Productoparaayuda>();
+
     public string? Concepto  { get; set; }
     public int Cantidad{ get; set; }
-    
-
     public string Filtro { get; set; }
 
     [Inject]
     public ProductosBLL productosBLL { get; set; }
+   
+
    
    protected override void OnInitialized()
 
@@ -233,7 +237,7 @@
         Buscar();
     }
     
-   
+
     public void Buscar()
     {
 
@@ -258,8 +262,8 @@
         }
         else
         {
-
-            //MessageBox.Show("No se pudo encontar el producto", "Falido", MessageBoxButton.OK, MessageBoxImage.Error);
+       
+     
         }
     }
     public void Nuevo()
@@ -275,27 +279,33 @@
   
     public void Guardar()
     {
+      
          Productos encontrado = productosBLL.Buscar(productos.ProductoId);
          if (encontrado != null)
         {
-            
-            this.productos = encontrado;
-            productos.Existencia-=productospaquete.Cantidad;
-            productos.Ganancia = (int)((productos.Precio - productos.Costo) * 100) / productos.Costo;
-            productos.ValorInventario = productos.Existencia * productos.Costo;
-            productosBLL.Modificar(productos);
+          
+              this.productos=encontrado;
+             
+                   
+                          lista4 = productosBLL.GetListAyuda(p => true);
+                          
+                    productosBLL.Modificarpararestar(productos,productospaquete);
+           
+          
+             @* productospaquete.Descripcion=encontrado.Descripcion;  *@
+            @*  productos.Descripcion="Mixto";
+            productos.Existencia=productospaquete.Cantidad;  *@
+             @*  productosBLL.insertar(productos); *@
+             productospaquete.NombreproductoProducido=encontrado.Descripcion;
             productosBLL.Insertar(productospaquete);
+            Nuevo();
             toast.ShowSuccess("Se Guardo");
-
+          
         }
         else
         {
            toast.ShowError("No se  Guardo");
-            //MessageBox.Show("No se pudo encontar el producto", "Falido", MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-        
-         
-         
+        } 
     }
 
     public void Limpiar()
@@ -325,20 +335,21 @@
         Productos encontrado = productosBLL.Buscar(productos.ProductoId);
          if (encontrado != null)
         {  
-               Cantidad=productospaquete.Cantidad;
-                   foreach (var item in lista)
-        {
-            if (item.Descripcion== item.Descripcion)
+            Cantidad=productospaquete.Cantidad;
+            foreach (var item in lista)
             {
-              productospaquete.total+= (item.Gramo* Cantidad);
+                if (item.Descripcion== item.Descripcion)
+                {
+                productospaquete.total+= (item.Gramo* Cantidad);
+                }
             }
-        }
-                productospaquete.AyudaPaquete.Add(new Productoparaayuda (productos.Descripcion=encontrado.Descripcion ,Cantidad));
-                   lista = productosBLL.GetList(c => true);
+            
+                productospaquete.AyudaPaquete.Add(new Productoparaayuda (productos.Descripcion=encontrado.Descripcion ,Cantidad,encontrado.ProductoId));
+                lista = productosBLL.GetList(c => true);
         }
         else
         {
-           toast.ShowError("No se encontró el producto");
+           toast.ShowError("No se Guardo ");
             //MessageBox.Show("No se pudo encontar el producto", "Falido", MessageBoxButton.OK, MessageBoxImage.Error);
         }
        
@@ -348,18 +359,36 @@
 
      public void Eliminar(){
         
-           if (productosBLL.EliminarEmpaquetado(productospaquete.Id))
+         Productospaquete encontrado = productosBLL.Buscarpaquete(productospaquete.Id);
+       
+        if (encontrado != null)
+        {
+            Productos encontrados = productosBLL.Buscar(productospaquete.Id);
+       
+            if (encontrados != null)
             {
+
+
+                this.productospaquete = encontrado;
+                this.productos = encontrados;
+                productos.Existencia+=productospaquete.Cantidad;
+                if(productosBLL.EliminarEmpaquetado(productospaquete.Id))
+                {
                     toast.ShowSuccess("Se elimino el producto");
-                
 
-                  
+                }
+                else
+                {
+                    toast.ShowError("No se elimino el producto");
+                }
+            
+            }
 
-            }
-            else
-            {
-                toast.ShowError("No se elimino el producto");
-            }
+
+        }else{
+               toast.ShowError("No se elimino el producto");
+        }
+           
     }
 
 }

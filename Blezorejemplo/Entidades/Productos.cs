@@ -20,7 +20,7 @@ namespace Blezorejemplo.Entidades
        public float ValorInventario { get; set; }
         public double Precio { get; set; }
       
-        public  DateTime FechaCaducacion { get; set; }
+        public  DateTime FechaCaducacion { get; set; }= DateTime.Now;
         
         public float Gramo { get; set; }
         public int Ganancia { get; set; }

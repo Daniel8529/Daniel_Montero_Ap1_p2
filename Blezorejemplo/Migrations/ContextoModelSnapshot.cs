@@ -29,6 +29,9 @@ namespace Blezorejemplo.Migrations
                     b.Property<string>("Concepto")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("Idresta")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("ProductospaqueteId")
                         .HasColumnType("INTEGER");
 
@@ -103,7 +106,7 @@ namespace Blezorejemplo.Migrations
 
                     b.HasIndex("ProductoId");
 
-                    b.ToTable("ProductosDetalle");
+                    b.ToTable("Productosdetalle");
                 });
 
             modelBuilder.Entity("Blezorejemplo.Entidades.Productospaquete", b =>
@@ -120,6 +123,13 @@ namespace Blezorejemplo.Migrations
 
                     b.Property<DateTime>("FechaCaducacion")
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("NombreproductoProducido")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Producido")
+                        .HasColumnType("INTEGER");
 
                     b.Property<float>("total")
                         .HasColumnType("REAL");
