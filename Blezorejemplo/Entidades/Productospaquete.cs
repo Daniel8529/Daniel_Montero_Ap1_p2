@@ -8,8 +8,6 @@ namespace Blezorejemplo.Entidades
    public class Productospaquete{
       
       [Key]
-        
-        
         public int Id { get; set; }
         
          public string? Concepto  { get; set; }

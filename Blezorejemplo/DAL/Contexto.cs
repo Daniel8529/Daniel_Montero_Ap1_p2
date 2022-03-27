@@ -12,7 +12,7 @@ namespace Blezorejemplo.DAL
 
         public DbSet<Productospaquete> productospaquetes{ get; set;}
       
-       public DbSet<Productoparaayuda> Productoparaayuda { get; set; }
+        public DbSet<Productoparaayuda> Productoparaayuda { get; set; }
         
         public Contexto(DbContextOptions<Contexto> options) : base(options){}
     }

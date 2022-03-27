@@ -160,13 +160,14 @@
                              <div class="flex-fill mx-2">
                                 <label>Producto</label>
                                 <InputSelect class="form-control col-2"  @bind-Value="productospaquete.Id  ">
-                                      <option>Mixto</option>
+                                       
                                         @foreach (var item in productospaquete.AyudaPaquete)
                                         {
                                             
-                                            <option value="@item.Id" >@item.Concepto</option>
+                                            <option value="@item.Id">@item.Concepto</option>
                             
                                         }
+                                        
                                 </InputSelect>
                             </div>
 
@@ -262,8 +263,8 @@
         }
         else
         {
-       
-     
+
+            //MessageBox.Show("No se pudo encontar el producto", "Falido", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
     public void Nuevo()
@@ -279,11 +280,10 @@
   
     public void Guardar()
     {
-      
-         Productos encontrado = productosBLL.Buscar(productos.ProductoId);
+          Productos encontrado = productosBLL.Buscar(productos.ProductoId);
          if (encontrado != null)
         {
-          
+         
               this.productos=encontrado;
              
                    
@@ -296,9 +296,9 @@
             @*  productos.Descripcion="Mixto";
             productos.Existencia=productospaquete.Cantidad;  *@
              @*  productosBLL.insertar(productos); *@
-             productospaquete.NombreproductoProducido=encontrado.Descripcion;
+               productospaquete.NombreproductoProducido=encontrado.Descripcion;
+            
             productosBLL.Insertar(productospaquete);
-            Nuevo();
             toast.ShowSuccess("Se Guardo");
           
         }
@@ -306,6 +306,7 @@
         {
            toast.ShowError("No se  Guardo");
         } 
+         
     }
 
     public void Limpiar()
@@ -349,7 +350,7 @@
         }
         else
         {
-           toast.ShowError("No se Guardo ");
+           toast.ShowError("No se encontró el producto");
             //MessageBox.Show("No se pudo encontar el producto", "Falido", MessageBoxButton.OK, MessageBoxImage.Error);
         }
        

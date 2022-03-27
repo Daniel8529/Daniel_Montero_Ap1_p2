@@ -130,12 +130,9 @@ namespace Blezorejemplo.BLL
             }
             return paso;
         }
-        public bool Modificarpararestar(Productos producto, Productospaquete productospaquete)
+           public bool Modificarpararestar(Productos producto, Productospaquete productospaquete)
         {
             bool paso = false;
-
-
-
 
             try
             {
@@ -167,9 +164,6 @@ namespace Blezorejemplo.BLL
                 paso = contexto.SaveChanges() > 0;
 
 
-
-
-
             }
             catch (Exception)
             {
@@ -177,6 +171,7 @@ namespace Blezorejemplo.BLL
             }
             return paso;
         }
+
 
 
 
